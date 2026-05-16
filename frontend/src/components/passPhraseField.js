@@ -3,8 +3,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import EmailIcon from '@mui/icons-material/Email';
 import { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -77,59 +76,31 @@ const theme = createTheme({
 });
 
 
-export default function PasswordField({ value, isError, errorText, onChangePass }) {
+export default function PassphraseFields({ displayLabel, value, isError, errorText, onChangeVal }) {
 
-    const [pass, setPass] = useState(value);
-
-    const [showPassword, setShowPassword] = useState(false);
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
-
-    const handleMouseUpPassword = (event) => {
-        event.preventDefault();
-    };
+    const [val, setVal] = useState(value||'');
+    const [isFocused, setIsFocused] = useState(false);
 
     return (
         <ThemeProvider theme={theme}>
             <TextField
-                label="Password"
+                label={displayLabel}
+                autoComplete="off" 
                 sx={{
                     // width: '100%',
                 }}
-                type={showPassword ? 'text' : 'password'}
-                value={pass}
+                type='text'
+                value={val}
                 onChange={(event) => {
-                    setPass(event.target.value);
-                    if (onChangePass) {
-                        onChangePass(event.target.value)
+                    setVal(event.target.value);
+                    if (onChangeVal) {
+                        onChangeVal(event.target.value)
                     };
                 }}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 error={isError}
                 helperText={errorText}
-                slotProps={{
-                    input: {
-                        endAdornment: <InputAdornment position="end"><IconButton 
-                        sx={{
-                            color:'#000',
-                            '&:hover':{
-                                color:'#19838A',
-                            }
-                        }}
-                            aria-label={ //aria-labels are used for screen-readers thus makes website for accessible :D 
-                                showPassword ? 'hide the password' : 'display the password' 
-                            }
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            onMouseUp={handleMouseUpPassword}
-                            edge="end"
-                        >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton ></InputAdornment>,
-                    },
-                }}
             />
         </ThemeProvider>
     );

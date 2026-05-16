@@ -76,9 +76,9 @@ const theme = createTheme({
 });
 
 
-export default function TextFields({ displayLabel, value, isError, onChangeVal }) {
+export default function TextFields({ displayLabel, value, isError, errorText, onChangeVal }) {
 
-    const [val, setVal] = useState(null);
+    const [val, setVal] = useState(value||'');
     const [isFocused, setIsFocused] = useState(false);
 
     return (
@@ -99,6 +99,7 @@ export default function TextFields({ displayLabel, value, isError, onChangeVal }
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 error={isError}
+                helperText={errorText}
                 slotProps={{
                     input: {
                         startAdornment: isFocused || val ? //if it is focused or has a value the adornment will appear otherwise it doesn't

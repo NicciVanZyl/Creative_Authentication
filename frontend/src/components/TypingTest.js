@@ -3,68 +3,111 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TextField from '@mui/material/TextField';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-function TypingTest({ returnFlightTime, returnDwellTime, passPhrase }) {
+const theme = createTheme({
+    components: {
 
-    const sentence = passPhrase;
-    const [endVal, setEndVal] = useState(passPhrase.split(''));
-    const [keyDown, setKeyDown] = useState([]);
-    const [keyUp, setKeyUp] = useState([]);
-    const [downTime, setDownTime] = useState([]);
-    const [flightTime, setFlightTime] = useState([]);
+
+        MuiAutocomplete: {
+            styleOverrides: {
+                //label colours
+                root: {
+                    '& .MuiInputLabel-root': {
+                        color: '#000',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#000',
+                    },
+                },
+
+                //input 
+                input: {
+                    fontSize: '16px',
+                    color: '#000',
+                },
+
+            },
+        },
+
+        //outlines 
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    borderRadius: '32px',
+                    '& fieldset': {
+                        borderColor: '#000',
+                        borderWidth: '2px',
+                    },
+                    '&:hover fieldset': {
+                        borderColor: '#27F5CF',
+                        borderWidth: '2px',
+                    },
+                    '&.Mui-focused fieldset': {
+                        borderColor: '#27F5CF',
+                        borderWidth: '2px',
+                    },
+                    '&.Mui-error fieldset': {
+                        borderColor: 'rgb(233, 56, 56)',
+                        borderWidth: '2px',
+                    },
+                    background: '#FAFAFA',
+                },
+            },
+        },
+
+        //little label 
+        MuiInputLabel: {
+            styleOverrides: {
+                root: {
+                    color: '#000',
+                    background: 'transparent',
+                    borderRadius: '12px 12px 0 0',
+                    paddingLeft: '5px', paddingRight: '5px',
+                    '&.Mui-focused': { color: '#19838A', background: 'transparent', borderRadius: '12px 12px 0 0', paddingLeft: '5px', paddingRight: '5px', },
+                    '&.Mui-error': { color: 'rgb(255, 125, 125)' },
+                },
+            },
+        },
+
+    },
+});
+
+function TypingTest({ returnFlightTime, returnDwellTime, isTestDone, passPhrase, displayLabel }) {
+
+    const sentence = passPhrase ? passPhrase : "Fork Paris Water Mushroom";
+    const [endVal, setEndVal] = useState(sentence.split(''));
+    const keyDown = useRef([]);
+    const keyUp = useRef([]);
+    const downTime = useRef([]);
+    const flightTime = useRef([]);
     const [hasError, setHasError] = useState(false);
     const [testDone, setTestDone] = useState(false);
-
+    const [value, setValue] = useState('');
 
 
     const calculateFlightTime = (currentDownTime, currentKeyUpArr) => {
         if (currentKeyUpArr.length === 0) return;
         const lastUpTime = currentKeyUpArr[currentKeyUpArr.length - 1];
         const flight = currentDownTime - lastUpTime;
-        setFlightTime([...flightTime, flight]);
+        flightTime.current.push(flight);
     };
 
     const calculateDownTime = (currentUpTime, currentKeyDownArr) => {
         if (currentKeyDownArr.length === 0) return;
         const lastDownTime = currentKeyDownArr[currentKeyDownArr.length - 1];
         const down = currentUpTime - lastDownTime;
-        setDownTime([...downTime, down]);
+        downTime.current.push(down);
     };
 
-    // need a mean and Standard deviation to get a more accurate dataset to compare to the stored dataset
-    //Then sort the data and remove any outlier data 
-    const getStatsForDataSets = () => {
-        if (flightTime.length == 0 || downTime.length == 0) {
-            return
-        }
 
-        //get mean and standard deveations for each dataset 
-        const meanFT = flightTime.reduce((sum, val) => sum + val, 0) / flightTime.length;
-        const variationFT = flightTime.reduce((sum, val) => sum + Math.pow(val - meanFT, 2));
-        const standardVariationFT = Math.sqrt(variationFT);
-        const meanDT = flightTime.reduce((sum, val) => sum + val, 0) / flightTime.length;
-        const variationDT = flightTime.reduce((sum, val) => sum + Math.pow(val - meanDT, 2));
-        const standardVariationDT = Math.sqrt(variationDT);
-
-        //remove outliers
-
-        if (flightTime.length < 4 || downTime.length < 4) {
-            return
-        }
-
-        const sortedFT = flightTime.sort((a, b) => a - b);
-        const q1FT = sortedFT[Math.floor(sortedFT.length * 0.25)];
-        const q3FT = sortedFT[Math.floor(sortedFT.length * 0.75)];
-        const iqrFT = q3FT - q1FT;
-        const maxCutoffFT = q3FT + 1.5 * iqrFT;
-        const cleanFT = flightTime.filter(val => val <= maxCutoffFT);
-    }
 
     const handleChange = (e) => {
         let currentInput = e.target.value;
+        setValue(e.target.value);
         if (currentInput.length === 0) {
             setHasError(false);
             return;
@@ -84,10 +127,10 @@ function TypingTest({ returnFlightTime, returnDwellTime, passPhrase }) {
 
         if (currentInput.length == endVal.length) {
             if (correctInput) {
-                if (returnDwellTime) returnDwellTime = downTime;
-                if (returnFlightTime) returnFlightTime = flightTime;
-
+                if (returnDwellTime) returnDwellTime(downTime.current);
+                if (returnFlightTime) returnFlightTime(flightTime.current);
                 setTestDone(true);
+                if (isTestDone) isTestDone(true);
                 setHasError(false);
 
             } else {
@@ -97,26 +140,42 @@ function TypingTest({ returnFlightTime, returnDwellTime, passPhrase }) {
 
     }
 
+    const resetTest = () => {
+        flightTime.current = [];
+        downTime.current = [];
+        setHasError(false);
+        keyDown.current = [];
+        keyUp.current = [];
+        setTestDone(false);
+        setValue('');
+    }
+
     return (
         <Stack>
-            <TextField
+            <ThemeProvider theme={theme}>
+                <TextField
 
-                onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleChange(e)}
 
-                onKeyDown={(e) => {
-                    const time = Date.now();
-                    setKeyDown([...keyDown, time]);
-                    calculateFlightTime(time, keyUp);
-                }}
-                onKeyUp={(e) => {
-                    const time = Date.now();
-                    setKeyUp([...keyUp, time]);
-                    calculateDownTime(time, keyDown);
-                }}
-                error={hasError}
-                helperText={hasError ? "The passphrase is Incorrect please try again" : "Calculating Typing Cadence"}
-                disabled={testDone}
-            />
+                    onKeyDown={(e) => {
+                        const time = performance.now();
+                        keyDown.current.push(time);
+                        calculateFlightTime(time, keyUp.current);
+                    }}
+                    onKeyUp={(e) => {
+                        const time = performance.now();
+                        keyUp.current.push(time);
+                        calculateDownTime(time, keyDown.current);
+                    }}
+                    error={hasError}
+                    helperText={hasError ? "The passphrase is Incorrect please try again" : ""}
+                    disabled={testDone}
+                    label={displayLabel}
+                    value={value}
+                    autoComplete="off" 
+                />
+            </ThemeProvider>
+            <button onClick={() => resetTest()}>Reset</button>
         </Stack>
     );
 };
