@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import TextField from '@mui/material/TextField';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+
 const theme = createTheme({
     components: {
 
@@ -175,7 +176,7 @@ function TypingTest({ returnFlightTime, returnDwellTime, isTestDone, passPhrase,
                     autoComplete="off" 
                 />
             </ThemeProvider>
-            <button onClick={() => resetTest()}>Reset</button>
+            <button className="customBtnSecondary mx-auto mt-4" onClick={() => resetTest()}>Reset</button>
         </Stack>
     );
 };

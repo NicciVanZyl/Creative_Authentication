@@ -14,12 +14,18 @@ import { useForm, Controller } from "react-hook-form";
 import PassphraseFields from "./components/passPhraseField";
 import axios from "axios";
 import Modals from "./components/Modal";
+import Divider from '@mui/material/Divider';
 
 function App() {
   const [minDwellTime, setMinDwellTime] = useState();
   const [minFlightTime, setMinFlightTime] = useState();
   const [maxDwellTime, setMaxDwellTime] = useState();
   const [maxFlightTime, setMaxFlightTime] = useState();
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalBody, setModalBody] = useState('');
+  const [modalButton, setModalButton] = useState('');
 
   const [emailVal, setEmailVal] = useState('');
   const [passwordVal, setPasswordVal] = useState('');
@@ -72,9 +78,8 @@ function App() {
       setRegID(res.data.id);
       passPhrase.current = passphrase;
       setPage('regAuth');
-      setMessage(res.data.message);
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Registration failed');
+      setMessage('Registration failed, please try again');
       setHasError(true);
     }
   };
@@ -86,18 +91,15 @@ function App() {
       password,
     });
     if (res.data.message == 'User found') {
-      console.log('Login response:', res.data);
-      setMessage(res.data.message);
       setMinDwellTime(res.data.minDwellTime);
       setMaxDwellTime(res.data.maxDwellTime);
       setMinFlightTime(res.data.minFlightTime);
       setMaxFlightTime(res.data.maxFlightTime);
       passPhrase.current = res.data.passphrase;
-      console.log(res.data.passphrase);
 
       setPage('loginAuth');
     } else {
-      setMessage(res.data.message);
+      setMessage("Email or Password incorrect, Please try again");
       setHasError(true);
     }
   };
@@ -109,10 +111,9 @@ function App() {
       maxFlightTime: maxFlight,
     });
     if (res.data.message != 'User not found') {
-      console.log("authentication complete");
       setHasError(false);
     } else {
-      setMessage(res.data.message);
+      setMessage("You could not be authenticated, please try again");
       setHasError(true);
     }
   };
@@ -173,12 +174,12 @@ function App() {
   }
 
   const checkAuthData = (flightTime, dwellTime) => {
-    
+
     const cleanFlightTimes = removeOutliers(flightTime)
     const flightTimeStats = getStatsForDataSets(cleanFlightTimes);
     const cleanDwellTimes = removeOutliers(dwellTime)
     const dwellTimeStats = getStatsForDataSets(cleanDwellTimes);
-    
+
     console.log('minDwell:', minDwellTime, 'maxDwell:', maxDwellTime);
     console.log('minFlight:', minFlightTime, 'maxFlight:', maxFlightTime);
     console.log('flightTime input:', flightTimeStats.mean);
@@ -190,14 +191,20 @@ function App() {
     if (dwellMatch && flightMatch) {
       //auth complete modal & logged in modal
       console.log("authentication complete");
-      <Modals ></Modals>
+      setShowModal(true);
+      setModalBody('Checkmark');
+      setModalTitle('Logged in Successfully');
+      setModalButton('Reload Page');
     } else {
       if (authAttempts !== 0) {
         setMessage("Authentication failed, please try again.");
         setAuthAttempts(authAttempts - 1);
 
       } else {
-        //failed to authenticate modal + refresh
+        setShowModal(true);
+        setModalBody('X');
+        setModalTitle('Failed to Authenticate your identity');
+        setModalButton('Reload Page');
       }
     }
   }
@@ -227,6 +234,10 @@ function App() {
 
 
     UpdateRegister(calculatedMinDwell, dwellTimeStats.mean + (1.5 * dwellTimeStats.standardDeviation), calculatedMinFlight, flightTimeStats.mean + (1.5 * flightTimeStats.standardDeviation))
+    setShowModal(true);
+    setModalBody('Checkmark');
+    setModalTitle('Registered Successfully!');
+    setModalButton('Reload Page');
   }
 
   //when a user registers they'll do three rounds of the test- that data will be put into 1 array to then get a general overview of the users data. then once that data is captured and merged I have to remove outliers
@@ -245,7 +256,7 @@ function App() {
           <Stack gap={5} direction="vertical">
             <h1>Creative Authentication</h1>
             <h2>Login</h2>
-            <p>{message}</p>
+            <p className="errorMessage">{message}</p>
             <Controller
               name="email"
               control={loginControl}
@@ -272,14 +283,6 @@ function App() {
               control={loginControl}
               rules={{
                 required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters"
-                },
-                pattern: {
-                  value: /^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~])/,//random string of letters is checking if there are special characters in the password that was entered
-                  message: "Password must contain a special character"
-                }
               }}
               render={({ field }) => (
                 <PasswordField
@@ -291,14 +294,18 @@ function App() {
               )}
             />
 
-            <button type="submit">Log in</button>
-            <button type="button" onClick={() => {
-              resetSignup({ email: '', password: '', passphrase: '' });
-              resetLogin({ email: '', password: '' });
-              setHasError(false);
-              setMessage('');
-              setPage('signup');
-            }}>Register</button>
+            <button className="customBtn" type="submit">Log in</button>
+            <Divider>OR</Divider>
+            <div className="switchPage">
+              <p>Don't have an account yet?: </p>
+              <button className="customBtnSecondary" type="button" onClick={() => {
+                resetSignup({ email: '', password: '', passphrase: '' });
+                resetLogin({ email: '', password: '' });
+                setHasError(false);
+                setMessage('');
+                setPage('signup');
+              }}>Register</button>
+            </div>
           </Stack>
         </form>
       )
@@ -309,7 +316,7 @@ function App() {
           <Stack gap={5} direction="vertical">
             <h1>Creative Authentication</h1>
             <h2>Registration</h2>
-            <p>{message}</p>
+            <p className="errorMessage">{message}</p>
             <Controller
               name="email"
               control={signupControl}
@@ -376,14 +383,18 @@ function App() {
               )}
             />
 
-            <button type="submit">Register</button>
-            <button type="button" onClick={() => {
-              resetLogin({ email: '', password: '' });
-              resetSignup({ email: '', password: '', passphrase: '' });
-              setHasError(false);
-              setMessage('');
-              setPage('login');
-            }}>Back to Login</button>
+            <button className="customBtn" type="submit">Register</button>
+            <Divider>OR</Divider>
+            <div className="switchPage">
+              <p>Already have an account?: </p>
+              <button className="customBtnSecondary" type="button" onClick={() => {
+                resetLogin({ email: '', password: '' });
+                resetSignup({ email: '', password: '', passphrase: '' });
+                setHasError(false);
+                setMessage('');
+                setPage('login');
+              }}>Login</button>
+            </div>
           </Stack>
         </form>
       )
@@ -393,7 +404,7 @@ function App() {
         <Stack gap={5} direction="vertical">
           <h1>Creative Authentication</h1>
           <h2>Registration Authentication</h2>
-          <p>{message}</p>
+          <p className="errorMessage">{message}</p>
           <TypingTest
             returnDwellTime={(newData) => { regDwellTime.current.push(...newData); }}
             returnFlightTime={(newData) => { regFlightTime.current.push(...newData); }}
@@ -416,7 +427,7 @@ function App() {
             passPhrase={passPhrase.current}
           />
 
-          <button disabled={regTestDone1 && regTestDone2 && regTestDone3 ? false : true} onClick={() => submitAuthData(regFlightTime.current, regDwellTime.current)}>Finish Registration</button>
+          <button className="customBtn" disabled={regTestDone1 && regTestDone2 && regTestDone3 ? false : true} onClick={() => submitAuthData(regFlightTime.current, regDwellTime.current)}>Finish Registration</button>
         </Stack>
       )
     } else if (currentPage == 'loginAuth') {
@@ -424,7 +435,7 @@ function App() {
         <Stack gap={5} direction="vertical">
           <h1>Creative Authentication</h1>
           <h2>Login Authentication</h2>
-          <p>{message}</p>
+          <p className="errorMessage">{message}</p>
           <TypingTest
             returnDwellTime={(newData) => { loginDwellTime.current.push(...newData); }}
             returnFlightTime={(newData) => { loginFlightTime.current.push(...newData); }}
@@ -433,7 +444,7 @@ function App() {
             passPhrase={passPhrase.current}
           />
 
-          <button disabled={loginTestDone ? false : true} onClick={() => checkAuthData(loginFlightTime.current, loginDwellTime.current)}>Authenticate</button>
+          <button className="customBtn" disabled={loginTestDone ? false : true} onClick={() => checkAuthData(loginFlightTime.current, loginDwellTime.current)}>Authenticate</button>
         </Stack>
 
       )
@@ -446,16 +457,16 @@ function App() {
   return (
     <Container fluid className="background">
       <Row className="loginContainers">
-        <Col lg={6} md={12} className="imageContainer">
+        <Col lg={6} className="imageContainer d-none d-lg-block">
           <img className="image" src={placeHolder}></img>
         </Col>
-        <Col lg={6} md={12} className="loginContainer">
+        <Col lg={6} md={12} className="loginContainer mx-auto my-sm-5 ">
           <div key={page}>
             {currentPage(page)}
           </div>
         </Col>
-
       </Row>
+      <Modals showModal={showModal} modalTitle={modalTitle} modalBody={modalBody} modalButtons={modalButton}></Modals>
     </Container>
   );
 }

@@ -1,28 +1,185 @@
 .background {
   background: #38ffe1;
   background: linear-gradient(0deg, rgba(56, 255, 225, 1) 0%, rgba(93, 0, 255, 1) 100%);
-  padding-top: 5rem;
+  height: fit-content;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
-.loginContainers{
+.loginContainers {
   width: 100%;
   margin-top: 5rem;
+  margin: 0 !important;
 }
 
-.imageContainer{
+.imageContainer {
   width: 100%;
   margin: 0;
+  padding-left: 0 !important;
+  max-height: 100vh;
+  
 }
 
-.image{
+.image {
   max-width: 100%;
   object-fit: contain;
   margin: 0;
-
+  max-height: 100%;
+  object-fit: contain;
 }
 
-.loginContainer{
+.loginContainer {
   background-color: #fff;
-  margin-top: 2em;
+  padding: 4em !important;
+  display: flex;
+  justify-content: center;
+  text-align: center;
   padding-top: 2em;
+  border-radius: 24px;
+  width: fit-content !important;
+  height: fit-content;
+}
+
+.switchPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    margin-right: 1em;
+  }
+}
+
+.customBtn {
+  width: 9rem;
+  height: 3rem;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow:
+    inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.customBtn {
+  background: #649ddf;
+  outline: none;
+  border: none;
+  border-radius: 0.5rem;
+  z-index: 1;
+  margin: 0 auto;
+  display: block;
+  width: 12rem;
+}
+
+.customBtn:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  border-radius: 0.5rem;
+  background: #3475c0;
+  box-shadow:
+    inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.customBtn:hover:after {
+  left: 0;
+  width: 100%;
+}
+
+.customBtn:active {
+  top: 2px;
+}
+
+.customBtnSecondary {
+  width: 7rem !important;
+  height: 2rem;
+  color: #000;
+  font-weight: 600;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow:
+    inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.customBtnSecondary {
+  background: transparent;
+  outline: none;
+  border-color: #649ddf;
+  border-radius: 0.5rem;
+  z-index: 1;
+  margin: 0;
+  display: block;
+  width: 12rem;
+}
+
+.customBtnSecondary:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  border-radius: 0.5rem;
+  background: #649ddf;
+  box-shadow:
+    inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.customBtnSecondary:hover:after {
+  left: 0;
+  width: 100%;
+}
+
+.customBtnSecondary:hover {
+  color: #fff;
+}
+
+.customBtnSecondary:active {
+  top: 2px;
+}
+
+.errorMessage {
+  color: #b61010;
+  font-weight: 700;
+}
+
+.modalHeader {
+  background-color: #3475c0;
+  color: #fff;
+}
+
+.modalImage {
+  width: 100%;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

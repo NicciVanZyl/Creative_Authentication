@@ -1,25 +1,41 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
+import { useState, useEffect } from 'react';
+// import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Checkmark from '../Images/Checkmark.png'
+import X from '../Images/X.png'
 
-function Modals(showModal, modalTitle, modalBody, modalButtons) {
+
+function Modals({ showModal, modalTitle, modalBody, modalButtons }) {
     const [show, setShow] = useState(showModal);
-
-    const handleClose = () => setShow(false);
+    const [image, setImage] = useState(modalBody);
+    const handleClose = () => {
+        setShow(false);
+        window.location.reload();
+    }
     const handleShow = () => setShow(true);
+
+    useEffect(() => {
+        setShow(showModal);
+    }, [showModal]);
+    useEffect(() => {
+        if (modalBody == "X") {
+            setImage(X);
+        } else {
+            setImage(Checkmark);
+        }
+    }, [modalBody]);
 
     return (
         <>
-            <Modal show={showModal} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{modalTitle}</Modal.Title>
+            <Modal centered className='modal' show={show} onHide={handleClose}>
+                <Modal.Header className='modalHeader' closeButton>
+                    <Modal.Title className='modalTitle'>{modalTitle}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{modalBody}</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                <Modal.Body className='modalBody'><img className='modalImage' src={image}></img></Modal.Body>
+                <Modal.Footer className='modalFooter'>
+                    <button className='customBtnSecondary' onClick={handleClose}>
                         {modalButtons}
-                    </Button>
-
+                    </button>
                 </Modal.Footer>
             </Modal>
         </>
