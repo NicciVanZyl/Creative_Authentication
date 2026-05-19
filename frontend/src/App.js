@@ -75,6 +75,11 @@ function App() {
         password,
         passphrase
       });
+
+      const token = res.data.token;
+      localStorage.setItem("token", res.data.token);
+      console.log("JWT Token:", token);
+
       setRegID(res.data.id);
       passPhrase.current = passphrase;
       setPage('regAuth');
@@ -97,6 +102,10 @@ function App() {
       setMaxFlightTime(res.data.maxFlightTime);
       passPhrase.current = res.data.passphrase;
 
+      const token = res.data.token;
+      localStorage.setItem("token", res.data.token);
+      console.log("JWT Token:", token);
+      
       setPage('loginAuth');
     } else {
       setMessage("Email or Password incorrect, Please try again");
