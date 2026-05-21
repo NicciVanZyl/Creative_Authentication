@@ -231,18 +231,18 @@ function App() {
       console.log('Not enough data to calculate stats');
       return;
     }
-    const calculatedMinDwell = dwellTimeStats.mean - (1.5 * dwellTimeStats.standardDeviation);
-    const calculatedMinFlight = flightTimeStats.mean - (1.5 * flightTimeStats.standardDeviation);
+    const calculatedMinDwell = dwellTimeStats.mean - (1 * dwellTimeStats.standardDeviation);
+    const calculatedMinFlight = flightTimeStats.mean - (1 * flightTimeStats.standardDeviation);
 
     setMinDwellTime(calculatedMinDwell < 15 ? 15 : calculatedMinDwell);
-    setMaxDwellTime(dwellTimeStats.mean + (1.5 * dwellTimeStats.standardDeviation));
+    setMaxDwellTime(dwellTimeStats.mean + (1 * dwellTimeStats.standardDeviation));
 
     setMinFlightTime(calculatedMinFlight < 15 ? 15 : calculatedMinFlight);
-    setMaxFlightTime(flightTimeStats.mean + (1.5 * flightTimeStats.standardDeviation));
+    setMaxFlightTime(flightTimeStats.mean + (1 * flightTimeStats.standardDeviation));
 
 
 
-    UpdateRegister(calculatedMinDwell, dwellTimeStats.mean + (1.5 * dwellTimeStats.standardDeviation), calculatedMinFlight, flightTimeStats.mean + (1.5 * flightTimeStats.standardDeviation))
+    UpdateRegister(calculatedMinDwell, dwellTimeStats.mean + (1 * dwellTimeStats.standardDeviation), calculatedMinFlight, flightTimeStats.mean + (1 * flightTimeStats.standardDeviation))
     setShowModal(true);
     setModalBody('Checkmark');
     setModalTitle('Registered Successfully!');
