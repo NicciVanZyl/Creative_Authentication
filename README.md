@@ -38,7 +38,10 @@ Install all the dependencies in both backend and frontend using npm:
 ```
 npm install
 ```
-
+Add your own .env file in the backend folder:
+```
+.env file containing the MONGO_URI and JWT string
+```
 Run the app:
 ```
 npm start
